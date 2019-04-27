@@ -1,0 +1,17 @@
+{
+  "name": "blocipedia",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "emily",
+  "license": "ISC",
+  "dependencies": {
+    "morgan": "^1.9.1",
+    "pg": "^7.4.1",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.32.6"
+  }
+}
