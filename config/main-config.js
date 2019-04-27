@@ -11,6 +11,7 @@ const logger = require('morgan');
 module.exports = {
     init(app, express){
       app.set("views", viewsFolder);
+      app.use(logger('dev'));
       app.set("view engine", "ejs");
       app.use(bodyParser.urlencoded({ extended: true }));
       app.use(expressValidator());
