@@ -1,10 +1,11 @@
 const Wiki = require("./models").Wiki;
+const Authorizer = require("../policies/wiki.js");
+
 
 module.exports = {
 
-  getAllWikis(callback) {
+    getAllWikis(callback) {
         return Wiki.all()
-
         .then((wikis) => {
             callback(null, wikis);
         })
@@ -12,8 +13,7 @@ module.exports = {
             callback(err);
         })
     }, 
-
-  addWiki(newWiki, callback) {
+    addWiki(newWiki, callback) {
         return Wiki.create(newWiki)
         .then((wiki) => {
             callback(null, wiki)
@@ -22,20 +22,7 @@ module.exports = {
             callback(err);
         })
     }, 
-
-  deleteWiki(id, callback) {
-        return Wiki.destroy({
-            where: {id}
-        })
-        .then((deletedRecordsCount) => {
-            callback(null, deletedRecordsCount)
-        })
-        .catch((err) => {
-            callback(err);
-        })
-    }, 
-
-   getWiki(id, callback){
+    getWiki(id, callback){
         return Wiki.findById(id)
         .then((wiki) => {
             callback(null, wiki)
@@ -45,13 +32,34 @@ module.exports = {
         })
     },
 
-   updateWiki(id, updatedWiki, callback) {
+    deleteWiki(req, callback) {
+
+        return Wiki.findById(req.params.id)
+        .then((wiki) => {
+
+            const authorized = new Authorizer(req.user, wiki).destroy();
+
+            if(authorized) {
+                wiki.destroy()
+                .then((res) => {
+                    callback(null, wiki);
+                })
+            } else {
+                req.flash("notice", "Not authorized.")
+                callback(401);
+            }
+        })
+        .catch((err) => {
+            callback(err);
+       });
+    }, 
+
+    updateWiki(id, updatedWiki, callback) {
         return Wiki.findById(id)
         .then((wiki)=> {
             if(!wiki){
                 return callback("Wiki not found");
             }
-
             wiki.update(updatedWiki, {
                 fields: Object.keys(updatedWiki)
             })
@@ -63,4 +71,4 @@ module.exports = {
             });
         });
     }
-} 
+}

@@ -1,53 +1,48 @@
 'use strict';
-
-const UserQueries = require( "../queries/UserQueries.js" );
-const crypt = require( "../../util/encryption.js" );
-
-module.exports = ( sequelize, DataTypes ) => {
-
-const User = sequelize.define( "User", {
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define('User', {
+  
     username: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: { len: [ 2 ] },
+      allowNull: false
     },
-    email: {
+      email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      validate: { isEmail: true },
+       
+      validate: {
+        isEmail: {msg: "must be a valid email"}
+      }
     },
-    password: {
+      password: {
       type: DataTypes.STRING,
-      allowNull: false,
-      validate: { len: [ 4 ] },
+      allowNull: false
+       
     },
     role: {
       type: DataTypes.STRING,
       allowNull: false,
-      defaultValue: "guest",
-    },
- 
-  }, {} );
-
-  User.associate = function( models ) {
-    // associations can be defined here
+      defaultValue: "standard"
+        }
+  }, {});
+  
+  User.associate = function(models) {
+    
+    User.hasMany(models.Wiki, {
+      foreignKey: "userId",
+      as: "wikis"
+    });
   };
 
-  User.queries = new UserQueries( User );
 
-  User.encryptPassword = function( password ) {
-    return crypt.encrypt( password );
+  User.prototype.isStandard = function() {
+    return this.role === "standard";
   };
-
-  User.matchPassword = function( password, encrypted ) {
-    return crypt.match( password, encrypted );
+  User.prototype.isPremium = function() {
+    return this.role === "premium";
   };
-
-  User.prototype.matchPassword = function( password ) {
-    return User.matchPassword( password, this.password );
+  User.prototype.isAdmin = function() {
+    return this.role === "admin";
   };
-
   return User;
-};
+}; 
