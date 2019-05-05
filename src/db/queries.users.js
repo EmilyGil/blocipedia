@@ -2,6 +2,7 @@ const User = require("./models").User;
 const bcrypt = require("bcryptjs");
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 module.exports = {
 
   createUser(newUser, callback){
@@ -31,6 +32,22 @@ module.exports = {
     })
     .catch((err) => {
       callback(err);
+    })
+  },
+  
+  upgradeUser(req, callback){
+    return User.findById(req.user.id)
+    .then((user) => {
+        User.update(
+            {role : 2}
+        )
+    })
+    .then(() => {
+        console.log("Successfully upgraded from queries.users.js");
+        callback(null, user);
+    })
+    .catch((err) => {
+        callback(err);
     })
   }
 }

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <% include ../static/partials/head.ejs %>
+    </head>
+    <body>
+        <% include ../static/partials/navbar.ejs %>
+
+        <main class="container">
+            <h2>Upgrade to Premium Account</h2>
+            <p>You can own your private wiki page</p>
+            <p>It costs $15 one time pay</p>
+            <p>You can downgrade to the regular account anytime</p>
+        </main>
+        <form action="/users/upgrade" method="POST">
+                <script
+                  src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                  data-key="pk_test_B8wZzr9ZFk2AphaWpooLeMO4"
+                  data-amount="60.0"
+                  data-name="Blocipedia"
+                  data-description="premium account"
+                  data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+                  data-locale="auto"
+                  data-zip-code="true">
+                </script>
+        </form>
+
+    </body>
+
+
+</html> 
