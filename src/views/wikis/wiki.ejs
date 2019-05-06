@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <% include ../static/partials/head.ejs %>
+    </head>
+    <body>
+        <main class="container">
+            <% include ../static/partials/navbar.ejs %>
+
+            <h1>Wikis</h1>
+
+            <% if(currentUser){ %>
+                <a href="/wikis/new" class="btn btn-warning" role="button">Create New Wiki</a>
+            <% } %>
+            <br>
+
+            <ul class="list-group">
+                <% wikis.forEach((wiki) => { %>
+                <% if(wiki.private == false){ %>
+            <li class="list-group-item">
+                <a href="/wikis/<%= wiki.id %>"><%= wiki.title %></a>
+            </li>
+                <% } %>
+            <% }) %>
+            <% if(currentUser.role == "1" || currentUser.role == "2") { %>
+            
+                <h2>Private Wikis</h2>
+                <% wikis.forEach((wiki) => { %>
+                <% if(wiki.private == true){ %>
+            <li class="list-group-item">
+                <a href="/wikis/<%= wiki.id %>"><%= wiki.title %></a>
+            </li>
+                <% } %>
+            <% }) %>
+            <% } %>
+            </ul>
+        </main>
+    </body>
+</html> 
