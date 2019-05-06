@@ -1,5 +1,7 @@
 const wikiQueries = require("../db/queries.wikis.js");
 const Authorizer = require("../policies/wiki");
+const markdown = require( "markdown" ).markdown;
+
 
 module.exports = {
 
@@ -14,13 +16,23 @@ module.exports = {
         })
       },
     new(req, res, next) {
-        res.render("wikis/new");
+        const authorized = new Authorizer(req.user).new();
+        if(authorized){
+            res.render("wikis/new");
+        } else {
+            req.flash("notice", "You are not authorized.");
+            res.redirect("/wikis");
+
+        }
     },
+    
     create(req, res, next) {
+        const authorized = new Authorizer(req.user).create();
+        if(authorized){
         let newWiki = {
-            title: req.body.title,
-            body: req.body.body,
-            private: req.body.private,
+            title: markdown.toHTML(req.body.title),
+            body: markdown.toHTML(req.body.body),
+            private: req.body.private || false,
             userId: req.user.id
         };
         wikiQueries.addWiki(newWiki, (err, wiki) => {
@@ -31,7 +43,13 @@ module.exports = {
                 res.redirect(303, `/wikis/${wiki.id}`)
             }
         });
-    }, 
+    } else {
+        req.flash("notice", "You are not authorized.");
+        res.redirect("/wikis");
+    }
+},
+
+    
     show(req, res, next) {
         wikiQueries.getWiki(req.params.id, (err, wiki) => {
             if(err || wiki == null) {
@@ -52,15 +70,23 @@ module.exports = {
             }
         })
     },
+    
     edit(req, res, next){
-        wikiQueries.getWiki(req.params.id, (err, wiki) =>{
-            if(err || wiki == null) {
-                res.redirect(404, "/")
+        wikiQueries.getWiki(req.params.id, (err, wiki) => {
+            if(err || wiki == null){
+                res.redirect(404, "/wikis");
             } else {
-                res.render("wikis/edit", {wiki})
+                const authorized = new Authorizer(req.user, wiki).edit();
+                if(authorized){
+                    res.render("wikis/edit", {wiki});
+                } else {
+                    req.flash("You are not authorized to do that.")
+                    res.redirect(`/wikis/${req.params.id}`)
+                }
             }
         });
     },
+
     update(req, res, next) {
         wikiQueries.updateWiki(req.params.id, req.body, (err, wiki) => {
             if(err || wiki == null) {

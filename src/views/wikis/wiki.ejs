@@ -18,7 +18,7 @@
                 <% wikis.forEach((wiki) => { %>
                 <% if(wiki.private == false){ %>
             <li class="list-group-item">
-                <a href="/wikis/<%= wiki.id %>"><%= wiki.title %></a>
+                <a href="/wikis/<%= wiki.id %>"><%- wiki.title %></a>
             </li>
                 <% } %>
             <% }) %>
@@ -28,7 +28,7 @@
                 <% wikis.forEach((wiki) => { %>
                 <% if(wiki.private == true){ %>
             <li class="list-group-item">
-                <a href="/wikis/<%= wiki.id %>"><%= wiki.title %></a>
+                <a href="/wikis/<%= wiki.id %>"><%- wiki.title %></a>
             </li>
                 <% } %>
             <% }) %>
