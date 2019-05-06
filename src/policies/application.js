@@ -1,7 +1,9 @@
 module.exports = class ApplicationPolicy {
-    constructor(user, record) {
+    
+  constructor(user, record, collab) {
      this.user = user;
      this.record = record;
+     this.collab = collab;
    }
    _isStandard() {
     return this.user && this.user.role == "standard";
@@ -16,6 +18,11 @@ module.exports = class ApplicationPolicy {
     _isPremium() {
        return this.user && this.user.role == "premium";
    }
+
+   _isCollab(){
+    return this.collab;
+}
+
 
    new() {
      return this.user != null;
@@ -33,12 +40,16 @@ module.exports = class ApplicationPolicy {
     return this.edit();
   }
    
-    edit() {
-     return this.new() && this.record;
-   }
+  edit(){
+    return this.record && (this._isPremium() || this._isAdmin() || this._isCollab() );
+}
+
+   showPrivate(){
+    return this.record && (this._isPremium() || this._isAdmin() || this._isCollab() );
+}
 
 
-   destroy() {
+destroy() {
     return this.update();
    }
  }  
